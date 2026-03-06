@@ -1,0 +1,29 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Письма{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Письма</h1>
+    <a href="{% url 'mailing:message_create' %}" class="btn btn-primary">Создать письмо</a>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Заголовок письма</th>
+            <th scope="col">Тело письма</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for message in messages %}
+        <tr onclick="window.location='{% url 'mailing:message_detail' message.pk %}'"  role="button">
+            <td>{{ message.headline|truncatechars:100 }}</td>
+            <td>{{ message.body|truncatechars:100 }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

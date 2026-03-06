@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Каталог{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+
+</head>
+<body>
+<div class="row d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <div class="col-10">
+        <nav class="ms-5">
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:home' %}">Главная</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:subscribers_list' %}">Клиенты</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:sending_list' %}">Рассылки</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:log_list' %}">Отчет</a>
+
+        </nav>
+    </div>
+
+</div>
+
+
+{% block content %}{% endblock %}
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="container">
+  <p>Кол-во пользователей: {{ subscribers_count }}</p>
+  <p>Кол-во всех рассылок: {{ all_sending }}</p>
+  <p>Кол-во активных рассылок: {{ started_sending }}</p>
+</div>
+{% endblock %}
+

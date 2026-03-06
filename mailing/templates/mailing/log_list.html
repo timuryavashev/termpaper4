@@ -1,0 +1,39 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Отчет о рассылках</h1>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Дата и время рассылки</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Ответ почтового сервера</th>
+            <th scope="col">Рассылка</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.created_at }}</td>
+            <td>
+                {% if log.status == 'successfully' %}
+                Успешно
+                {% elif log.status == 'not_successfully' %}
+                Не успешно
+                {% endif %}
+            </td>
+            <td>{{ log.response }}</td>
+            <td>{{ log.sending }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

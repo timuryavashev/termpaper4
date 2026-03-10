@@ -1,0 +1,36 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Пользователи сервиса</h1>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Фамилия Имя Отчество</th>
+            <th scope="col">Email</th>
+            <th scope="col">Заблокирован</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for custom_user in custom_users %}
+        <tr onclick="window.location='{% url 'users:user_detail' custom_user.pk %}'"  role="button">
+            <td>{{ custom_user.first_name }} {{ custom_user.last_name }}</td>
+            <td>{{ custom_user.email }}</td>
+            <td>{% if custom_user.is_blocked == True %}Да
+              {% else %} Нет
+              {% endif %}
+
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,17 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}{% if object %}Редактирование клиента{% else %}Новый клиент{% endif %}{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+  <h1 class="mb-4">{% if object %}Редактирование письма{% else %}Новое письмо{% endif %}</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{% if object %}{% url 'mailing:message_detail' message.pk %}{% else %}{% url 'mailing:messages_list' %}{% endif %}"  class="btn btn-secondary">Отмена</a>
+  </form>
+</div>
+{% endblock %}

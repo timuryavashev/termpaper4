@@ -1,29 +1,36 @@
-from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, ListView, DetailView, View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from mailing.forms import SendingForm, SubscriberForm, MessageForm
-from mailing.models import Subscriber, Sending, Message, SendAttempt
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView, View
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from mailing.forms import MessageForm, SendingForm, SubscriberForm
+from mailing.models import Message, SendAttempt, Sending, Subscriber
 
 
 class HomeView(TemplateView):
-    template_name = 'mailing/home.html'
+    template_name = "mailing/home.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subscribers_count'] = Subscriber.objects.all().count()
-        context['all_sending'] = Sending.objects.all().count()
-        context['started_sending'] = Sending.objects.filter(status='started').count()
+        context["subscribers_count"] = Subscriber.objects.all().count()
+        context["all_sending"] = Sending.objects.all().count()
+        context["started_sending"] = Sending.objects.filter(status="started").count()
         return context
 
 
-class SubscriberListView(ListView):
+class SubscriberListView(LoginRequiredMixin, ListView):
     model = Subscriber
-    template_name = 'mailing/subscribers_list.html'
-    context_object_name = 'subscribers'
+    template_name = "mailing/subscribers_list.html"
+    context_object_name = "subscribers"
+
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="Managers").exists():
+            return Subscriber.objects.all()
+        return Subscriber.objects.filter(owner=self.request.user)
 
 
-class SubscriberCreateView(CreateView):
+class SubscriberCreateView(LoginRequiredMixin, CreateView):
     model = Subscriber
     form_class = SubscriberForm
 
@@ -32,38 +39,43 @@ class SubscriberCreateView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('mailing:subscriber_detail', args=[self.object.pk])
+        return reverse("mailing:subscriber_detail", args=[self.object.pk])
 
 
-class SubscriberDetailView(DetailView):
+class SubscriberDetailView(LoginRequiredMixin, DetailView):
     model = Subscriber
-    template_name = 'mailing/subscriber_detail.html'
-    context_object_name = 'subscriber'
+    template_name = "mailing/subscriber_detail.html"
+    context_object_name = "subscriber"
 
 
-class SubscriberUpdateView(UpdateView):
+class SubscriberUpdateView(LoginRequiredMixin, UpdateView):
     model = Subscriber
-    fields = ['email', 'full_name', 'comment', 'owner']
+    fields = ["email", "full_name", "comment", "owner"]
 
     def get_success_url(self):
-        return reverse('mailing:subscriber_detail', args=[self.object.pk])
+        return reverse("mailing:subscriber_detail", args=[self.object.pk])
 
 
-class SubscriberDeleteView(DeleteView):
+class SubscriberDeleteView(LoginRequiredMixin, DeleteView):
     model = Subscriber
-    success_url = reverse_lazy('mailing:subscribers_list')
+    success_url = reverse_lazy("mailing:subscribers_list")
 
 
-class SendingListView(ListView):
+class SendingListView(LoginRequiredMixin, ListView):
     model = Sending
-    template_name = 'mailing/sending_list.html'
-    context_object_name = 'sending'
+    template_name = "mailing/sending_list.html"
+    context_object_name = "sending"
+
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="Managers").exists():
+            return Sending.objects.all()
+        return Sending.objects.filter(owner=self.request.user)
 
 
-class SendingDetailView(DetailView):
+class SendingDetailView(LoginRequiredMixin, DetailView):
     model = Sending
-    template_name = 'mailing/sending_detail.html'
-    context_object_name = 'sending'
+    template_name = "mailing/sending_detail.html"
+    context_object_name = "sending"
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
@@ -71,19 +83,20 @@ class SendingDetailView(DetailView):
         return obj
 
 
-class SendingCreateView(CreateView):
+class SendingCreateView(LoginRequiredMixin, CreateView):
     model = Sending
     form_class = SendingForm
 
     def form_valid(self, form):
-        form.instance.status = 'created'
+        form.instance.status = "created"
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('mailing:sending_detail', args=[self.object.pk])
+        return reverse("mailing:sending_detail", args=[self.object.pk])
 
 
-class SendingUpdateView(UpdateView):
+class SendingUpdateView(LoginRequiredMixin, UpdateView):
     model = Sending
     form_class = SendingForm
 
@@ -93,62 +106,75 @@ class SendingUpdateView(UpdateView):
         return obj
 
     def get_success_url(self):
-        return reverse('mailing:sending_detail', args=[self.object.pk])
+        return reverse("mailing:sending_detail", args=[self.object.pk])
 
 
-class SendingDeleteView(DeleteView):
+class SendingDeleteView(LoginRequiredMixin, DeleteView):
     model = Sending
-    success_url = reverse_lazy('mailing:sending_list')
+    success_url = reverse_lazy("mailing:sending_list")
 
 
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, ListView):
     model = Message
-    template_name = 'mailing/messages_list.html'
-    context_object_name = 'messages'
+    template_name = "mailing/messages_list.html"
+    context_object_name = "messages"
+
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="Managers").exists():
+            return Message.objects.all()
+        return Message.objects.filter(owner=self.request.user)
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
-    template_name = 'mailing/message_detail.html'
-    context_object_name = 'message'
+    template_name = "mailing/message_detail.html"
+    context_object_name = "message"
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
+    model = Message
+    form_class = MessageForm
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("mailing:message_detail", args=[self.object.pk])
+
+
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     form_class = MessageForm
 
     def get_success_url(self):
-        return reverse('mailing:message_detail', args=[self.object.pk])
+        return reverse("mailing:message_detail", args=[self.object.pk])
 
 
-class MessageUpdateView(UpdateView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
-    form_class = MessageForm
-
-    def get_success_url(self):
-        return reverse('mailing:message_detail', args=[self.object.pk])
+    success_url = reverse_lazy("mailing:messages_list")
 
 
-class MessageDeleteView(DeleteView):
-    model = Message
-    success_url = reverse_lazy('mailing:messages_list')
-
-
-class SendMessageView(View):
+class SendMessageView(LoginRequiredMixin, View):
     def post(self, request, pk):
         sending = get_object_or_404(Sending, pk=pk)
 
         for subscriber in sending.subscribers.all():
             try:
                 sending.send_mail(subscriber.email)
-                SendAttempt.objects.create(status="successfully", response='Успешная отправка', sending=sending)
+                SendAttempt.objects.create(status="successfully", response="Успешная отправка", sending=sending)
             except Exception as e:
                 SendAttempt.objects.create(status="not_successfully", response=str(e), sending=sending)
 
-        return redirect('mailing:sending_list')
+        return redirect("mailing:sending_list")
 
 
-class SendAttemptListView(ListView):
-    model = SendAttempt
-    template_name = 'mailing/log_list.html'
-    context_object_name = 'logs'
+class SendAttemptListView(LoginRequiredMixin, TemplateView):
+    template_name = "mailing/log_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        logs = [x for x in SendAttempt.objects.all() if x.sending.owner == self.request.user]
+        context["logs"] = logs
+        return context

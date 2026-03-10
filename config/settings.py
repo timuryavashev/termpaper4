@@ -135,3 +135,5 @@ CACHES = {
         'LOCATION': 'redis://127.0.0.1:6379/1',
     }
 }
+
+SITE_URL = 'http://127.0.0.1:8000'

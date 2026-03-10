@@ -18,7 +18,19 @@
 
         </nav>
     </div>
-
+    <div class="col-2">
+        <nav class="ms-5">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'users:logout' %}" style="display: inline">
+                {% csrf_token %}
+                {{ user.username }}
+                <button type="submit" class="p-2 btn btn-outline-primary">Выйти</button>
+            </form>
+            {% else %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:login' %}">Вход</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:register' %}">Регистрация</a>
+            {% endif %}
+    </div>
 </div>
 
 

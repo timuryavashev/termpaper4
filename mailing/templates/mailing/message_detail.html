@@ -1,0 +1,31 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Письмо{% endblock %}
+
+{% block content %}
+
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Информация о письме</h1>
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-9">
+            <h3>Заголовок:</h3>
+            <p>{{ message.headline }}</p>
+            <h3>Тело письма:</h3>
+            <p>{{ message.body }}</p>
+
+        </div>
+        <div class="col-3">
+            <a href="{% url 'mailing:message_update' message.pk %}" class="btn btn-secondary">Редактировать</a>
+            <a href="{% url 'mailing:message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+
+
+    </div>
+    <a type="button" class="btn btn-lg btn-block btn-outline-primary" href="{% url 'mailing:messages_list' %}">Назад</a>
+</div>
+{% endblock %}
+

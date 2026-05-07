@@ -1,0 +1,43 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Рассылки</h1>
+    <a href="{% url 'mailing:messages_list' %}" class="btn btn-primary">Письма</a>
+    <a href="{% url 'mailing:sending_create' %}" class="btn btn-primary">Добавить рассылку</a>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Письмо рассылки</th>
+            <th scope="col">Статус рассылки</th>
+            <th scope="col">Начало рассылки</th>
+            <th scope="col">Завершение рассылки</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for send in sending %}
+        <tr onclick="window.location='{% url 'mailing:sending_detail' send.pk %}'" role="button">
+            <td>{{ send.message|truncatechars:100 }}</td>
+            <td>
+                {% if send.status == 'created' %}
+                Создана
+                {% elif send.status == 'started' %}
+                Запущена
+                {% elif send.status == 'done' %}
+                Завершена
+                {% endif %}
+            </td>
+            <td>{{ send.start_time }}</td>
+            <td>{{ send.end_time }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

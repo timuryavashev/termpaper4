@@ -1,0 +1,16 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Клиент{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+  <h3 class="mb-4">Вы действительно хотите удалить письмо "{{ message.headline|truncatechars:100 }}"?</h3>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="{% url 'mailing:message_detail' message.pk %}" class="btn btn-secondary">Отмена</a>
+  </form>
+</div>
+{% endblock %}

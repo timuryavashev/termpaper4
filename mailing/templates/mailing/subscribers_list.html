@@ -1,0 +1,31 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Клиенты{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Клиенты</h1>
+    <a href="{% url 'mailing:subscriber_create' %}" class="btn btn-primary">Добавить клиента</a>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Фамилия Имя Отчество</th>
+            <th scope="col">Email</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for subscriber in subscribers %}
+        <tr onclick="window.location='{% url 'mailing:subscriber_detail' subscriber.pk %}'"  role="button">
+            <td>{{ subscriber.full_name }}</td>
+            <td>{{ subscriber.email }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
